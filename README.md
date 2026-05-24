@@ -192,11 +192,7 @@ Vite will print the local URLs for the frontend and admin apps in the terminal.
 - New appointments are treated as paid for testing purposes.
 - Razorpay keys can stay as placeholders unless you later switch back to a live payment flow.
 
-## Build Output
 
-- `frontend/dist` and `admin/dist` are generated build folders.
-- They are not part of the source code and can be deleted safely.
-- Run `npm run build` inside `frontend` or `admin` only when you want a fresh production build.
 
 ## Useful Commands
 
