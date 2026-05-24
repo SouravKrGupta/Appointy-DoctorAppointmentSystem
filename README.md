@@ -183,7 +183,8 @@ Vite will print the local URLs for the frontend and admin apps in the terminal.
 
 - Uploads are stored locally in `backend/media`.
 - The backend serves them through `/media/...`.
-- Cloudinary is no longer used.
+- Cloudinary is not being used currently. In the future, we can integrate and use it if needed.
+
 
 ### Payments
 
