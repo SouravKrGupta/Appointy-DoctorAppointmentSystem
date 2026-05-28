@@ -61,7 +61,8 @@ const addDoctor = async (req, res) => {
     const newDoctor = new doctorModel({
       name,
       email,
-      image: await saveUploadedMedia(imageFile),
+      image: "",
+      imageMediaId: null,
       password: hashedPassword,
       speciality,
       degree,
@@ -71,6 +72,10 @@ const addDoctor = async (req, res) => {
       address: JSON.parse(address),
       date: Date.now()
     });
+
+    const mediaPath = await saveUploadedMedia(imageFile);
+    newDoctor.image = mediaPath;
+    newDoctor.imageMediaId = mediaPath.split("/").pop();
 
     await newDoctor.save();
 

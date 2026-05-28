@@ -109,8 +109,10 @@ const updateProfile = async (req, res) => {
         await userModel.findByIdAndUpdate(userId, { name, phone, address: JSON.parse(address), dob, gender })
 
         if (imageFile) {
+            const mediaPath = await saveUploadedMedia(imageFile)
             await userModel.findByIdAndUpdate(userId, {
-                image: await saveUploadedMedia(imageFile)
+                image: mediaPath,
+                imageMediaId: mediaPath.split('/').pop()
             })
         }
 

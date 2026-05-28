@@ -40,6 +40,14 @@ const getBaseUrl = (req) => {
   return `${req.protocol}://${req.get("host")}`;
 };
 
+const buildMediaUrl = (req, mediaId) => {
+  if (!mediaId) {
+    return "";
+  }
+
+  return `${getBaseUrl(req)}${MEDIA_URL_PREFIX}${mediaId}`;
+};
+
 const saveUploadedMedia = async (file) => {
   if (!file) {
     return "";
@@ -105,7 +113,7 @@ const normalizeImageRecord = (req, record) => {
     ...plainRecord,
     image: toPublicMediaUrl(
       req,
-      plainRecord.image,
+      plainRecord.imageMediaId ? buildMediaUrl(req, plainRecord.imageMediaId) : plainRecord.image,
       plainRecord.updatedAt || plainRecord.date || plainRecord._id
     ),
   };
@@ -126,6 +134,7 @@ const normalizeAppointmentRecord = (req, appointment) => {
 };
 
 export {
+  buildMediaUrl,
   saveUploadedMedia,
   normalizeAppointmentRecord,
   normalizeImageRecord,

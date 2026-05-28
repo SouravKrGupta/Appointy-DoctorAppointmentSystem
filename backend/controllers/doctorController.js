@@ -249,7 +249,9 @@ const updateDoctorProfile = async (req, res) => {
     };
 
     if (imageFile) {
-      updateData.image = await saveUploadedMedia(imageFile);
+      const mediaPath = await saveUploadedMedia(imageFile);
+      updateData.image = mediaPath;
+      updateData.imageMediaId = mediaPath.split("/").pop();
     }
 
     const updatedDoctor = await doctorModel.findByIdAndUpdate(docId, updateData, {
