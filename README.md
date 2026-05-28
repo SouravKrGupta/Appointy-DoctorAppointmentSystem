@@ -227,7 +227,8 @@ Vite will print the local URLs for the frontend and admin apps in the terminal.
 
 - Uploads are stored locally in `backend/media`.
 - The backend serves them through `/media/...`.
-- Cloudinary is no longer used.
+- Cloudinary is not being used currently. In the future, we can integrate and use it if needed.
+
 
 ### Payments
 
@@ -235,11 +236,7 @@ Vite will print the local URLs for the frontend and admin apps in the terminal.
 - New appointments are treated as paid for testing purposes.
 - Razorpay keys can stay as placeholders unless you later switch back to a live payment flow.
 
-## Build Output
 
-- `frontend/dist` and `admin/dist` are generated build folders.
-- They are not part of the source code and can be deleted safely.
-- Run `npm run build` inside `frontend` or `admin` only when you want a fresh production build.
 
 ## Useful Commands
 
