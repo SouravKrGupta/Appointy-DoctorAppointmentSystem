@@ -1,20 +1,17 @@
 import express from 'express'
 import cors from 'cors'
 import mongoose from 'mongoose'
-import path from 'path'
 import 'dotenv/config'
-import { fileURLToPath } from 'url'
 import connectDB from './config/mongodb.js'
 import adminRouter from './routes/adminRoute.js'
 import doctorRouter from './routes/doctorRoute.js'
 import userRouter from './routes/userRoute.js'
 import { initRealtime } from './utils/socket.js'
+import { getMediaById } from './controllers/mediaController.js'
 
 // app config
 const app = express()
 const port = process.env.PORT || 4000
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 
 app.set('trust proxy', 1)
 
@@ -41,7 +38,7 @@ connectDB()
 // middlewares
 app.use(express.json())
 app.use(cors(corsOptions))
-app.use('/media', express.static(path.join(__dirname, 'media')))
+app.get('/media/:id', getMediaById)
 
 // api endpoints
 app.use('/api/admin', adminRouter)

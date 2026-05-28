@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
 import {
-  getStoredMediaPath,
+  saveUploadedMedia,
   normalizeAppointmentRecord,
   normalizeImageRecord,
 } from "../utils/media.js";
@@ -249,7 +249,7 @@ const updateDoctorProfile = async (req, res) => {
     };
 
     if (imageFile) {
-      updateData.image = getStoredMediaPath(imageFile);
+      updateData.image = await saveUploadedMedia(imageFile);
     }
 
     const updatedDoctor = await doctorModel.findByIdAndUpdate(docId, updateData, {

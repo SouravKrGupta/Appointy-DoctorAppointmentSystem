@@ -5,7 +5,7 @@ import appointmentModel from "../models/appointmentModel.js";
 import doctorModel from "../models/doctorModel.js";
 import userModel from "../models/userModel.js";
 import {
-  getStoredMediaPath,
+  saveUploadedMedia,
   normalizeAppointmentRecord,
   normalizeImageRecord,
 } from "../utils/media.js";
@@ -61,7 +61,7 @@ const addDoctor = async (req, res) => {
     const newDoctor = new doctorModel({
       name,
       email,
-      image: getStoredMediaPath(imageFile),
+      image: await saveUploadedMedia(imageFile),
       password: hashedPassword,
       speciality,
       degree,

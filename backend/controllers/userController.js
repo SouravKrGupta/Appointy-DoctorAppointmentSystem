@@ -5,7 +5,7 @@ import userModel from "../models/userModel.js"
 import doctorModel from "../models/doctorModel.js"
 import appointmentModel from "../models/appointmentModel.js"
 import {
-    getStoredMediaPath,
+    saveUploadedMedia,
     normalizeAppointmentRecord,
     normalizeImageRecord,
 } from "../utils/media.js"
@@ -110,7 +110,7 @@ const updateProfile = async (req, res) => {
 
         if (imageFile) {
             await userModel.findByIdAndUpdate(userId, {
-                image: getStoredMediaPath(imageFile)
+                image: await saveUploadedMedia(imageFile)
             })
         }
 

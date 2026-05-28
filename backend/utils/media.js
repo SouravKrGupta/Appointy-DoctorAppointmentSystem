@@ -1,5 +1,6 @@
+import mediaModel from "../models/mediaModel.js";
+
 const MEDIA_URL_PREFIX = "/media/";
-const DATA_URL_PREFIX = "data:";
 
 const normalizeStoredPath = (imagePath) => {
   if (!imagePath || typeof imagePath !== "string") {
@@ -39,7 +40,7 @@ const getBaseUrl = (req) => {
   return `${req.protocol}://${req.get("host")}`;
 };
 
-const getStoredMediaPath = (file) => {
+const saveUploadedMedia = async (file) => {
   if (!file) {
     return "";
   }
@@ -52,7 +53,14 @@ const getStoredMediaPath = (file) => {
     return "";
   }
 
-  return `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
+  const media = await mediaModel.create({
+    filename: file.originalname || "",
+    contentType: file.mimetype,
+    size: file.size || file.buffer.length,
+    data: file.buffer,
+  });
+
+  return `${MEDIA_URL_PREFIX}${media._id}`;
 };
 
 const toPlainObject = (value) => {
@@ -80,10 +88,6 @@ const toPublicMediaUrl = (req, imagePath, versionValue) => {
   const normalizedPath = normalizeStoredPath(imagePath);
 
   if (/^(https?:\/\/|data:)/i.test(normalizedPath)) {
-    if (normalizedPath.startsWith(DATA_URL_PREFIX)) {
-      return normalizedPath;
-    }
-
     return appendVersion(normalizedPath, versionValue);
   }
 
@@ -122,7 +126,7 @@ const normalizeAppointmentRecord = (req, appointment) => {
 };
 
 export {
-  getStoredMediaPath,
+  saveUploadedMedia,
   normalizeAppointmentRecord,
   normalizeImageRecord,
   toPublicMediaUrl,
