@@ -46,7 +46,16 @@ const toPlainObject = (value) => {
   return typeof value.toObject === "function" ? value.toObject() : value;
 };
 
-const toPublicMediaUrl = (req, imagePath) => {
+const appendVersion = (url, versionValue) => {
+  if (!url || !versionValue) {
+    return url;
+  }
+
+  const separator = url.includes("?") ? "&" : "?";
+  return `${url}${separator}v=${encodeURIComponent(versionValue)}`;
+};
+
+const toPublicMediaUrl = (req, imagePath, versionValue) => {
   if (!imagePath) {
     return imagePath;
   }
@@ -54,10 +63,10 @@ const toPublicMediaUrl = (req, imagePath) => {
   const normalizedPath = normalizeStoredPath(imagePath);
 
   if (/^(https?:\/\/|data:)/i.test(normalizedPath)) {
-    return normalizedPath;
+    return appendVersion(normalizedPath, versionValue);
   }
 
-  return `${getBaseUrl(req)}${normalizedPath}`;
+  return appendVersion(`${getBaseUrl(req)}${normalizedPath}`, versionValue);
 };
 
 const normalizeImageRecord = (req, record) => {
@@ -69,7 +78,11 @@ const normalizeImageRecord = (req, record) => {
 
   return {
     ...plainRecord,
-    image: toPublicMediaUrl(req, plainRecord.image),
+    image: toPublicMediaUrl(
+      req,
+      plainRecord.image,
+      plainRecord.updatedAt || plainRecord.date || plainRecord._id
+    ),
   };
 };
 

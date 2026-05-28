@@ -14,7 +14,10 @@ const doctorSchema = new mongoose.Schema({
     slots_booked: { type: Object, default: {} },
     address: { type: Object, required: true },
     date: { type: Number, required: true },
-}, { minimize: false })
+}, {
+    minimize: false,
+    timestamps: true,
+})
 
 const doctorModel = mongoose.models.doctor || mongoose.model("doctor", doctorSchema);
 export default doctorModel;
