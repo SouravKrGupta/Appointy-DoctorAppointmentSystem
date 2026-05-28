@@ -19,13 +19,20 @@ const emitAppointmentEvent = ({ userId, docId, payload }) => {
   emitToParticipant("doctor", docId, "appointment:updated", payload);
 };
 
-const initRealtime = (app, port) => {
+const initRealtime = (app, port, allowedOrigins = []) => {
   const httpServer = createServer(app);
 
   ioInstance = new Server(httpServer, {
     cors: {
-      origin: "*",
+      origin(origin, callback) {
+        if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        }
+
+        return callback(new Error("Not allowed by CORS"));
+      },
       methods: ["GET", "POST"],
+      credentials: true,
     },
   });
 

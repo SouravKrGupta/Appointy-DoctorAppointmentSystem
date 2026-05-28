@@ -16,12 +16,29 @@ const port = process.env.PORT || 4000
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
+const allowedOrigins = (process.env.CLIENT_URLS || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean)
+
+const corsOptions = {
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+      return callback(null, true)
+    }
+
+    return callback(new Error('Not allowed by CORS'))
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  credentials: true,
+}
+
 // Connect to database (CALL THE FUNCTION)
 connectDB()
 
 // middlewares
 app.use(express.json())
-app.use(cors())
+app.use(cors(corsOptions))
 app.use('/media', express.static(path.join(__dirname, 'media')))
 
 // api endpoints
@@ -45,4 +62,4 @@ app.get('/test-db', (req, res) => {
 });
 
 
-initRealtime(app, port)
+initRealtime(app, port, allowedOrigins)

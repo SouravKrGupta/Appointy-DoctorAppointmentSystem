@@ -1,5 +1,49 @@
 # Appointy
 
+## Deploy frontend and admin on Netlify
+
+Your backend can stay on Render:
+`https://appointy-doctorappointmentsystem.onrender.com`
+
+### 1. Backend Render environment variables
+
+Add this on Render for the backend service:
+
+`CLIENT_URLS=https://your-frontend-site.netlify.app,https://your-admin-site.netlify.app`
+
+Keep your existing backend env vars too.
+
+### 2. Frontend Netlify setup
+
+Create a Netlify site from the `frontend` folder with:
+
+- Build command: `npm run build`
+- Publish directory: `dist`
+
+Add this environment variable in Netlify:
+
+`VITE_BACKEND_URL=https://appointy-doctorappointmentsystem.onrender.com`
+
+`frontend/netlify.toml` is already added for SPA redirects.
+
+### 3. Admin Netlify setup
+
+Create another Netlify site from the `admin` folder with:
+
+- Build command: `npm run build`
+- Publish directory: `dist`
+
+Add these environment variables in Netlify:
+
+- `VITE_BACKEND_URL=https://appointy-doctorappointmentsystem.onrender.com`
+- `VITE_CURRENCY=INR`
+
+`admin/netlify.toml` is already added for SPA redirects.
+
+### 4. Important note
+
+After you get the final Netlify URLs, update `CLIENT_URLS` on Render with both exact Netlify domains and redeploy the backend. Without that, browser CORS and socket connections will fail.
+
 Appointy is a MERN doctor appointment platform with three separate apps:
 
 - `frontend`: patient-facing website
