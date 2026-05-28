@@ -1,6 +1,42 @@
 const MEDIA_URL_PREFIX = "/media/";
 
-const getBaseUrl = (req) => `${req.protocol}://${req.get("host")}`;
+const normalizeStoredPath = (imagePath) => {
+  if (!imagePath || typeof imagePath !== "string") {
+    return imagePath;
+  }
+
+  const normalizedPath = imagePath.replace(/\\/g, "/").trim();
+
+  if (/^(https?:\/\/|data:)/i.test(normalizedPath)) {
+    return normalizedPath;
+  }
+
+  const mediaPathIndex = normalizedPath.toLowerCase().indexOf("/media/");
+  if (mediaPathIndex >= 0) {
+    return normalizedPath.slice(mediaPathIndex);
+  }
+
+  if (normalizedPath.toLowerCase().startsWith("media/")) {
+    return `/${normalizedPath}`;
+  }
+
+  return normalizedPath.startsWith("/") ? normalizedPath : `/${normalizedPath}`;
+};
+
+const getBaseUrl = (req) => {
+  if (process.env.BACKEND_URL) {
+    return process.env.BACKEND_URL.replace(/\/$/, "");
+  }
+
+  const forwardedProto = req.get("x-forwarded-proto");
+  const forwardedHost = req.get("x-forwarded-host");
+
+  if (forwardedProto && forwardedHost) {
+    return `${forwardedProto}://${forwardedHost}`;
+  }
+
+  return `${req.protocol}://${req.get("host")}`;
+};
 
 const toPlainObject = (value) => {
   if (!value) {
@@ -15,15 +51,13 @@ const toPublicMediaUrl = (req, imagePath) => {
     return imagePath;
   }
 
-  if (/^(https?:\/\/|data:)/i.test(imagePath)) {
-    return imagePath;
+  const normalizedPath = normalizeStoredPath(imagePath);
+
+  if (/^(https?:\/\/|data:)/i.test(normalizedPath)) {
+    return normalizedPath;
   }
 
-  if (imagePath.startsWith("/")) {
-    return `${getBaseUrl(req)}${imagePath}`;
-  }
-
-  return `${getBaseUrl(req)}/${imagePath}`;
+  return `${getBaseUrl(req)}${normalizedPath}`;
 };
 
 const normalizeImageRecord = (req, record) => {

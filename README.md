@@ -227,6 +227,8 @@ Vite will print the local URLs for the frontend and admin apps in the terminal.
 
 - Uploads are stored locally in `backend/media`.
 - The backend serves them through `/media/...`.
+- On Render, local uploaded files are not reliable long-term because the server filesystem is ephemeral.
+- For production, use a Render persistent disk or move uploads to a cloud storage service like Cloudinary, S3, or ImageKit.
 - Cloudinary is not being used currently. In the future, we can integrate and use it if needed.
 
 
