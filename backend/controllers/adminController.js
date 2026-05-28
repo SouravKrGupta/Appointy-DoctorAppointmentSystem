@@ -61,7 +61,7 @@ const addDoctor = async (req, res) => {
     const newDoctor = new doctorModel({
       name,
       email,
-      image: getStoredMediaPath(imageFile.filename),
+      image: getStoredMediaPath(imageFile),
       password: hashedPassword,
       speciality,
       degree,

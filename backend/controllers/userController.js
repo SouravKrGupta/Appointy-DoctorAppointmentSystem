@@ -110,7 +110,7 @@ const updateProfile = async (req, res) => {
 
         if (imageFile) {
             await userModel.findByIdAndUpdate(userId, {
-                image: getStoredMediaPath(imageFile.filename)
+                image: getStoredMediaPath(imageFile)
             })
         }
 

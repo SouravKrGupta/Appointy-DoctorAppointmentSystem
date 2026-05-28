@@ -1,4 +1,5 @@
 const MEDIA_URL_PREFIX = "/media/";
+const DATA_URL_PREFIX = "data:";
 
 const normalizeStoredPath = (imagePath) => {
   if (!imagePath || typeof imagePath !== "string") {
@@ -38,6 +39,22 @@ const getBaseUrl = (req) => {
   return `${req.protocol}://${req.get("host")}`;
 };
 
+const getStoredMediaPath = (file) => {
+  if (!file) {
+    return "";
+  }
+
+  if (typeof file === "string") {
+    return file;
+  }
+
+  if (!file.buffer || !file.mimetype) {
+    return "";
+  }
+
+  return `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
+};
+
 const toPlainObject = (value) => {
   if (!value) {
     return value;
@@ -63,6 +80,10 @@ const toPublicMediaUrl = (req, imagePath, versionValue) => {
   const normalizedPath = normalizeStoredPath(imagePath);
 
   if (/^(https?:\/\/|data:)/i.test(normalizedPath)) {
+    if (normalizedPath.startsWith(DATA_URL_PREFIX)) {
+      return normalizedPath;
+    }
+
     return appendVersion(normalizedPath, versionValue);
   }
 
@@ -99,8 +120,6 @@ const normalizeAppointmentRecord = (req, appointment) => {
     docData: normalizeImageRecord(req, plainAppointment.docData),
   };
 };
-
-const getStoredMediaPath = (filename) => `${MEDIA_URL_PREFIX}${filename}`;
 
 export {
   getStoredMediaPath,

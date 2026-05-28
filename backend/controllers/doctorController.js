@@ -249,7 +249,7 @@ const updateDoctorProfile = async (req, res) => {
     };
 
     if (imageFile) {
-      updateData.image = getStoredMediaPath(imageFile.filename);
+      updateData.image = getStoredMediaPath(imageFile);
     }
 
     const updatedDoctor = await doctorModel.findByIdAndUpdate(docId, updateData, {
