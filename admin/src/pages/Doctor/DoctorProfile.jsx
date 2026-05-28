@@ -3,26 +3,32 @@ import { DoctorContext } from '../../context/DoctorContext'
 import { AppContext } from '../../context/AppContext'
 import { toast } from 'react-toastify'
 import axios from 'axios'
+import { assets } from '../../assets/assets'
 
 const DoctorProfile = () => {
   const { dToken, profileData, setProfileData, getProfileData, backendUrl } = useContext(DoctorContext)
   const { currency } = useContext(AppContext)
   const [isEdit, setIsEdit] = useState(false)
+  const [image, setImage] = useState(false)
 
   const updateProfile = async () => {
     try {
-      const updateData = {
-        address: profileData.address,
-        fees: profileData.fees,
-        about: profileData.about,
-        available: profileData.available
+      const formData = new FormData()
+      formData.append('address', JSON.stringify(profileData.address))
+      formData.append('fees', profileData.fees)
+      formData.append('about', profileData.about)
+      formData.append('available', profileData.available)
+
+      if (image) {
+        formData.append('image', image)
       }
 
-      const { data } = await axios.post(backendUrl + '/api/doctor/update-profile', updateData, { headers: { dToken } })
+      const { data } = await axios.post(backendUrl + '/api/doctor/update-profile', formData, { headers: { dToken } })
 
       if (data.success) {
         toast.success(data.message)
         setIsEdit(false)
+        setImage(false)
         getProfileData()
       } else {
         toast.error(data.message)
@@ -61,7 +67,28 @@ const DoctorProfile = () => {
       <div className='mt-8 grid gap-6 xl:grid-cols-[320px_1fr]'>
         <aside className='shell-panel overflow-hidden p-5'>
           <div className='rounded-[28px] bg-gradient-to-br from-primary/20 via-primary/8 to-accent/15 p-4'>
-            <img className='h-[320px] w-full rounded-[24px] object-cover' src={profileData.image} alt="" />
+            {isEdit ? (
+              <label htmlFor='doctor-image' className='block cursor-pointer'>
+                <img
+                  className='h-[320px] w-full rounded-[24px] object-cover'
+                  src={image ? URL.createObjectURL(image) : profileData.image}
+                  alt=''
+                />
+                <div className='mt-3 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-white/90 px-4 py-2 text-sm font-medium text-primary shadow-sm'>
+                  <img className='w-4' src={assets.upload_area} alt='' />
+                  <span>Change photo</span>
+                </div>
+                <input
+                  id='doctor-image'
+                  type='file'
+                  accept='image/*'
+                  hidden
+                  onChange={(e) => setImage(e.target.files[0] || false)}
+                />
+              </label>
+            ) : (
+              <img className='h-[320px] w-full rounded-[24px] object-cover' src={profileData.image} alt="" />
+            )}
           </div>
 
           <div className='mt-5'>
@@ -161,7 +188,7 @@ const DoctorProfile = () => {
           {isEdit && (
             <div className='mt-8 flex flex-wrap gap-3'>
               <button type='button' onClick={updateProfile} className='primary-btn'>Save changes</button>
-              <button type='button' onClick={() => { setIsEdit(false); getProfileData() }} className='secondary-btn'>Cancel edit</button>
+              <button type='button' onClick={() => { setIsEdit(false); setImage(false); getProfileData() }} className='secondary-btn'>Cancel edit</button>
             </div>
           )}
         </section>

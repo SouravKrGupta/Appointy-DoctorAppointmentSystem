@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
 import {
+  getStoredMediaPath,
   normalizeAppointmentRecord,
   normalizeImageRecord,
 } from "../utils/media.js";
@@ -209,13 +210,20 @@ const updateDoctorProfile = async (req, res) => {
   try {
     const docId = req.user.id;
     const { fees, address, available, about } = req.body;
+    const imageFile = req.file;
 
-    await doctorModel.findByIdAndUpdate(docId, {
+    const updateData = {
       fees,
-      address,
-      available,
+      address: typeof address === "string" ? JSON.parse(address) : address,
+      available: available === true || available === "true",
       about,
-    });
+    };
+
+    if (imageFile) {
+      updateData.image = getStoredMediaPath(imageFile.filename);
+    }
+
+    await doctorModel.findByIdAndUpdate(docId, updateData);
 
     res.json({ success: true, message: "Profile Updated" });
   } catch (error) {

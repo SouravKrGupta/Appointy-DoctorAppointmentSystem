@@ -11,6 +11,7 @@ import {
   listNotifications,
   markNotificationsRead,
 } from '../controllers/notificationController.js';
+import upload from '../middlewares/multer.js';
 const doctorRouter = express.Router();
 
 doctorRouter.post("/login", loginDoctor)
@@ -21,7 +22,7 @@ doctorRouter.post("/change-availability", authDoctor, changeAvailability)
 doctorRouter.post("/complete-appointment", authDoctor, appointmentComplete)
 doctorRouter.get("/dashboard", authDoctor, doctorDashboard)
 doctorRouter.get("/profile", authDoctor, doctorProfile)
-doctorRouter.post("/update-profile", authDoctor, updateDoctorProfile)
+doctorRouter.post("/update-profile", authDoctor, upload.single('image'), updateDoctorProfile)
 doctorRouter.get("/chat/threads", authDoctor, listChatThreads)
 doctorRouter.get("/chat/:appointmentId/messages", authDoctor, getChatMessages)
 doctorRouter.post("/chat/:appointmentId/messages", authDoctor, sendChatMessage)
