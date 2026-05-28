@@ -5,6 +5,18 @@
 Your backend can stay on Render:
 `https://appointy-doctorappointmentsystem.onrender.com`
 
+## Live Demo
+# Frontend
+
+`https://appointy-doctorappointmentsystem.netlify.app/`
+
+# Admin Dashboard
+
+`https://adminappointy-doctorappointmentsystem.netlify.app/`
+
+
+
+
 ### 1. Backend Render environment variables
 
 Add this on Render for the backend service:
