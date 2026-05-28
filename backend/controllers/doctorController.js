@@ -252,7 +252,27 @@ const updateDoctorProfile = async (req, res) => {
       updateData.image = getStoredMediaPath(imageFile.filename);
     }
 
-    await doctorModel.findByIdAndUpdate(docId, updateData, { runValidators: true });
+    const updatedDoctor = await doctorModel.findByIdAndUpdate(docId, updateData, {
+      new: true,
+      runValidators: true,
+    }).select("-password");
+
+    if (!updatedDoctor) {
+      return res.status(404).json({ success: false, message: "Doctor not found" });
+    }
+
+    const doctorSnapshot = updatedDoctor.toObject();
+    delete doctorSnapshot.password;
+    delete doctorSnapshot.slots_booked;
+
+    await appointmentModel.updateMany(
+      { docId },
+      {
+        $set: {
+          docData: doctorSnapshot,
+        },
+      }
+    );
 
     res.json({ success: true, message: "Profile Updated" });
   } catch (error) {
