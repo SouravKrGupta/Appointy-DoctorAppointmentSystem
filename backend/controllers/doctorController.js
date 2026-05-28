@@ -211,19 +211,48 @@ const updateDoctorProfile = async (req, res) => {
     const docId = req.user.id;
     const { fees, address, available, about } = req.body;
     const imageFile = req.file;
+    const existingDoctor = await doctorModel.findById(docId);
+
+    if (!existingDoctor) {
+      return res.status(404).json({ success: false, message: "Doctor not found" });
+    }
+
+    let parsedAddress = existingDoctor.address;
+
+    if (typeof address === "string" && address.trim()) {
+      try {
+        parsedAddress = JSON.parse(address);
+      } catch (error) {
+        return res.status(400).json({ success: false, message: "Invalid address format" });
+      }
+    } else if (address && typeof address === "object") {
+      parsedAddress = address;
+    }
+
+    const parsedFees =
+      fees === undefined || fees === null || fees === ""
+        ? existingDoctor.fees
+        : Number(fees);
+
+    if (Number.isNaN(parsedFees)) {
+      return res.status(400).json({ success: false, message: "Invalid consultation fee" });
+    }
 
     const updateData = {
-      fees,
-      address: typeof address === "string" ? JSON.parse(address) : address,
-      available: available === true || available === "true",
-      about,
+      fees: parsedFees,
+      address: parsedAddress,
+      available:
+        available === undefined
+          ? existingDoctor.available
+          : available === true || available === "true",
+      about: about ?? existingDoctor.about,
     };
 
     if (imageFile) {
       updateData.image = getStoredMediaPath(imageFile.filename);
     }
 
-    await doctorModel.findByIdAndUpdate(docId, updateData);
+    await doctorModel.findByIdAndUpdate(docId, updateData, { runValidators: true });
 
     res.json({ success: true, message: "Profile Updated" });
   } catch (error) {
